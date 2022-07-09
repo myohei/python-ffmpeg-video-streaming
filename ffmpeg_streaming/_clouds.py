@@ -55,7 +55,8 @@ class S3(Clouds):
         files = [f for f in listdir(directory) if isfile(join(directory, f))]
 
         try:
-            config = boto3.s3.transfer.TransferConfig(use_threads=False)
+            from boto3.s3.transfer import TransferConfig
+            config = TransferConfig(use_threads=False)
             for file in files:
                 self.s3.upload_file(join(directory, file), bucket_name, join(folder, file).replace("\\", "/"), Config=config)
         except self.err as e:
