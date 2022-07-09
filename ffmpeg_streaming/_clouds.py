@@ -39,7 +39,6 @@ class S3(Clouds):
         try:
             import boto3
             from botocore.exceptions import ClientError
-            from boto3.s3.transfer import TransferConfig
         except ImportError as e:
             raise ImportError("No specified import name! make sure that you have installed the package via pip:\n\n"
                               "pip install boto3")
@@ -56,7 +55,7 @@ class S3(Clouds):
         files = [f for f in listdir(directory) if isfile(join(directory, f))]
 
         try:
-            config = TransferConfig(use_threads=False)
+            config = boto3.s3.transfer.TransferConfig(use_threads=False)
             for file in files:
                 self.s3.upload_file(join(directory, file), bucket_name, join(folder, file).replace("\\", "/"), Config=config)
         except self.err as e:
