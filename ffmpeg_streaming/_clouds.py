@@ -38,12 +38,14 @@ class S3(Clouds):
         """
         try:
             import boto3
+            from boto3.s3.transfer import TransferConfig
             from botocore.exceptions import ClientError
         except ImportError as e:
             raise ImportError("No specified import name! make sure that you have installed the package via pip:\n\n"
                               "pip install boto3")
 
         self.s3 = boto3.client('s3', **options)
+        self.config = TransferConfig(use_threads=False)
         self.err = ClientError
 
     def upload_directory(self, directory, **options):
@@ -55,10 +57,8 @@ class S3(Clouds):
         files = [f for f in listdir(directory) if isfile(join(directory, f))]
 
         try:
-            from boto3.s3.transfer import TransferConfig
-            config = TransferConfig(use_threads=False)
             for file in files:
-                self.s3.upload_file(join(directory, file), bucket_name, join(folder, file).replace("\\", "/"), Config=config)
+                self.s3.upload_file(join(directory, file), bucket_name, join(folder, file).replace("\\", "/"), Config=self.config)
         except self.err as e:
             logging.error(e)
             raise RuntimeError(e)
